@@ -1,0 +1,446 @@
+---
+title: "Introduction to Geospatial Visualizations"
+author: "Tom Kennon"
+date: "February 11, 2018"
+output:
+  ioslides_presentation:
+    smaller: true
+    widecreen: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is Geospatial Data?
+- Geospatial: when your data contains some sort of geographical coordinates of interest.
+- Trends, clusters, and patterns can be found in spatial data analysis leading to a greater understanding of current events and ability to predict future events.
+- Growing area of interest for many industries including insurance, socio-economic, governmental (ex. Census, NASA, armed forces, etc.), business, social media, weather forcasting, advertisers.
+- Some companies that leverage geographical data include Airbnb, Expedia, Uber.
+- Some companies help with API such as Google: map data, geocoding, etc.
+
+
+## Some Helpful R Packages:
+- maps
+    + Holds a lot of map data for various counties, states, countries.
+- ggplot2
+    + In-depth visualizations
+- ggmap
+    + Uses Google's API or Stamen Maps as a source to produce more in-depth, detailed static visual maps
+- leaflet
+    + Java-script based
+    + Helpful for showcasing non-static images
+
+
+## ggplot2
+```{r ggplot, echo=TRUE, eval=FALSE}
+ggplot(data = NULL, mapping = aes(), ..., environment = parent.frame())
+```
+- data: Default dataset to use for plot. If not already a data.frame, will be converted to one by fortify. If not specified, must be suppled in each layer added to the plot.
+- mapping: Default list of aesthetic mappings to use for plot. If not specified, must be suppled in each layer added to the plot.
+- ...: Other arguments passed on to methods. Not currently used.
+- environment: If an variable defined in the aesthetic mapping is not found in the data, ggplot will look for it in this environment. It defaults to using the environment in which ggplot() is called.
+
+## geom_polygon
+```{r geom_polygon, echo=TRUE, eval=FALSE}
+geom_polygon(mapping = NULL, data = NULL, stat = "identity",
+  position = "identity", ..., na.rm = FALSE, show.legend = NA,
+  inherit.aes = TRUE)
+```
+- mapping: Set of aesthetic mappings created by aes or aes_. If specified and inherit.aes = TRUE (the default), it is combined with the default mapping at the top level of the plot. You must supply mapping if there is no plot mapping.
+- data: The data to be displayed in this layer. There are three options:
+    + If NULL, the default, the data is inherited from the plot data as specified in the call to ggplot.
+    + A data.frame, or other object, will override the plot data. All objects will be fortified to produce a data frame.
+    + A function will be called with a single argument, the plot data. The return value must be a data.frame., and will be used as the layer data.
+- stat: The statistical transformation to use on the data for this layer, as a string.
+- position: Position adjustment, either as a string, or the result of a call to a position adjustment function.
+
+
+## geom_polygon
+```{r geom_polygon2, echo=TRUE, eval=FALSE}
+geom_polygon(mapping = NULL, data = NULL, stat = "identity",
+  position = "identity", ..., na.rm = FALSE, show.legend = NA,
+  inherit.aes = TRUE)
+```
+- ...: other arguments passed on to layer. These are often aesthetics, used to set an aesthetic to a fixed value, like color = "red" or size = 3. They may also be parameters to the paired geom/stat.
+- na.rm: If FALSE, the default, missing values are removed with a warning. If TRUE, missing values are silently removed.
+- show.legend: logical. Should this layer be included in the legends? NA, the default, includes if any aesthetics are mapped. FALSE never includes, and TRUE always includes.
+- inherit.aes: If FALSE, overrides the default aesthetics, rather than combining with them. This is most useful for helper functions that define both data and aesthetics and shouldn't inherit behaviour from the default plot specification, e.g. borders.
+
+
+
+
+## geom_polygon
+- geom_polygon understands the following aesthetics:
+    + x: length-wise coordinates of visualization produced
+    + y: height-wise coordinates of visualization produced
+    + alpha: transparency of shape produced
+    + colour: color of shape or borders
+    + fill: what data/color makes up the "fill" of the objects produced
+    + group: arrangement of the shapes
+    + linetype: type of lines used in drawing for example solid, dashed, dotted, etc.
+    + size: thickness of shape
+
+## geom_point
+- geom_polygon understands the following aesthetics:
+    + x: length-wise coordinates of visualization produced
+    + y: height-wise coordinates of visualization produced
+    + alpha: transparency of shape produced
+    + colour: color of point or borders
+    + fill: what data/color makes up the "fill" of the objects produced
+    + group : arrangement of the points
+    + size: thickness of shape
+    + shape: the corresponding point produced (ie. closed circle, triangle, square, etc.)
+    + stroke: modifies the width of the boroder
+
+
+## State Populations
+- https://census.gov
+- This dataset reports the populations for U.S. states according to the U.S. Census (2013)
+- Data cleaning
+- Use a dataset within {maps} package for geographical coordinates to use in the mapping of the United States in ggplot2's plotting grid.
+
+```{r popdata0, echo=FALSE, warning=FALSE}
+setwd("C:/Users/Tom Kennon/Documents/UCONN/STAT 6494/Presentation")
+```
+
+```{r popdata, echo=TRUE, warning=FALSE}
+library(maps)
+library(ggplot2)
+
+states <- map_data("state")
+
+pop <- read.csv("state populations.csv")
+colnames(states)[5] <- "State"
+pop$State <- sapply(pop$State, tolower)
+pop$Population <- as.numeric(pop$Population)
+```
+
+
+## State Populations
+- Merge the data States graphical coordinates with the populations database
+
+```{r popdata2, echo=TRUE, warning=FALSE}
+choro <- merge(states, pop, sort=FALSE, by="State")
+choro <- choro[order(choro$order),]
+```
+
+
+## State Populations
+
+```{r pop1, echo=TRUE, warning=FALSE}
+ggplot(choro, aes(long, lat))
+```
+
+## State Populations
+
+```{r pop2, echo=TRUE, warning=FALSE}
+ggplot(choro, aes(long, lat)) +
+  ### <b>
+  geom_polygon(aes(group = group, fill=-Population.Ranking))
+  ### </b>
+```
+
+## State Populations
+
+```{r pop3, echo=TRUE, warning=FALSE}
+ggplot(choro, aes(long, lat)) +
+  geom_polygon(aes(group = group, fill=-Population.Ranking)) +
+  ### <b>
+  scale_fill_gradientn(name="Population Size",
+      colours = c("magenta1", "magenta4"))
+  ### </b>
+```
+
+
+
+## State Populations
+
+```{r pop4a, echo=TRUE, warning=FALSE,eval=FALSE}
+ggplot(choro, aes(long, lat)) +
+  geom_polygon(aes(group = group, fill=-Population.Ranking)) +
+  scale_fill_gradientn(name="Population Size",
+      colours = c("magenta1", "magenta4"),
+  ### <b>    
+      labels = c("~600K", "1.5M", "3.5M", "6M", "10M", "38M")) +
+  labs(title = "Geographical Heat Map of Population Size",
+       x = "Longitude", y = "Latitude")
+  ### </b>
+```
+
+## State Populations
+
+```{r pop4b, echo=FALSE, warning=FALSE}
+ggplot(choro, aes(long, lat)) +
+  geom_polygon(aes(group = group, fill=-Population.Ranking)) +
+  scale_fill_gradientn(name="Population Size",
+      colours = c("magenta1", "magenta4"),
+  ### <b>    
+      labels = c("~600K", "1.5M", "3.5M", "6M", "10M", "38M")) +
+  labs(title = "Geographical Heat Map of Population Size",
+       x = "Longitude", y = "Latitude")
+  ### </b>
+```
+
+
+## State Populations
+
+```{r pop5a, echo=TRUE, warning=FALSE,eval=FALSE}
+ggplot(choro, aes(long, lat)) +
+  geom_polygon(aes(group = group, fill=-Population.Ranking)) +
+  scale_fill_gradientn(name="Population Size",
+      colours = c("magenta1", "magenta4"),
+      labels = c("~600K", "1.5M", "3.5M", "6M", "10M", "38M")) +
+  labs(title = "Geographical Heat Map of Population Size",
+       x = "Longitude", y = "Latitude") +
+  ### <b>
+  coord_map("albers", at0 = 45.5, lat1=29.5)
+  ### </b>
+```
+
+## State Populations
+
+```{r pop5b, echo=FALSE, warning=FALSE,eval=TRUE}
+ggplot(choro, aes(long, lat)) +
+  geom_polygon(aes(group = group, fill=-Population.Ranking)) +
+  scale_fill_gradientn(name="Population Size",
+      colours = c("magenta1", "magenta4"),
+      labels = c("~600K", "1.5M", "3.5M", "6M", "10M", "38M")) +
+  labs(title = "Geographical Heat Map of Population Size",
+       x = "Longitude", y = "Latitude") +
+  ### <b>
+  coord_map("albers", at0 = 45.5, lat1=29.5)
+  ### </b>
+```
+
+## ggmap
+```{r ggmap, echo=TRUE, eval=FALSE}
+ggmap(ggmap, extent = "panel", base_layer, maprange = FALSE,
+  legend = "right", padding = 0.02, darken = c(0, "black"), ...)
+```
+- ggmap: an object of class ggmap (from function get_map)
+- extent: how much of the plot should the map take up? "normal", "device", or "panel" (default)
+- base_layer: a ggplot(aes(...), ...) call
+- maprange: logical for use with base_layer; should the map define the x and y limits?
+- legend: "left"", "right" (default), "bottom", "top", "bottomleft", "bottomright", "topleft", "topright", "none"
+- padding: distance from legend to corner of the plot (used with legend, formerly b)
+- darken: vector of the form c(number, color), where number is in [0, 1] and color is a character string indicating the color of the darken. 0 indicates no darkening, 1 indicates a black-out.
+
+
+
+
+## SAT Scores in New York City High Schools
+- https://www.kaggle.com/nycopendata/high-schools
+- This dataset reports the average SAT score for all 2014-2015 accredited high schools in New York City, New York U.S.
+- Variables of Interest: Latitudes, Longitudes, and SAT Scores with corresponding 
+- Data cleaning
+- ~375 different High Schools
+
+```{r satdata0, echo=FALSE, warning=FALSE,include=FALSE}
+setwd("C:/Users/Tom Kennon/Documents/UCONN/STAT 6494/Presentation")
+```
+
+```{r satdata, echo=TRUE, warning=FALSE}
+sat <- read.csv("scores.csv")
+sat <- subset(sat,!is.na(sat$Average.Score..SAT.Math.) |
+                 !is.na(sat$Average.Score..SAT.Reading.) |
+                 !is.na(sat$Average.Score..SAT.Writing.))
+
+sat$Raw.Score <- sat$Average.Score..SAT.Math. +
+  sat$Average.Score..SAT.Reading. + sat$Average.Score..SAT.Writing.
+
+library(maps)
+library(ggplot2)
+library(ggmap)
+library(leaflet)
+```
+
+
+
+## SAT Scores in NYC High Schools
+```{r sat1, echo=TRUE, include=TRUE, warning=FALSE}
+nyc <- get_map(location = c(lat = 40.71, lon = -74.00), zoom = 11)
+```
+
+## SAT Scores in NYC High Schools
+```{r sat2, echo=TRUE, include=TRUE, warning=FALSE}
+nyc_sat <- ggmap(nyc)
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat3a, echo=TRUE, warning=FALSE, eval=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude)) 
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat3b, echo=FALSE, include=TRUE, warning=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude)) 
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat4a, echo=TRUE, warning=FALSE,eval=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      ### <b>  
+      size=Raw.Score))
+      ### </b>
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat4b, echo=FALSE, warning=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      ### <b>  
+      size=Raw.Score))
+      ### </b>
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat5a, echo=TRUE, warning=FALSE,eval=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+        size=Raw.Score)) +
+  ### <b>
+  scale_size(range = c(0, 5))
+  ### </b>
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat5b, echo=FALSE, warning=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+        size=Raw.Score)) +
+  ### <b>
+  scale_size(range = c(0, 5))
+  ### </b>
+
+nyc_sat
+```
+
+
+## SAT Scores in NYC High Schools
+```{r sat6a, echo=TRUE, warning=FALSE, eval=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      size=Raw.Score,
+      ### <b>
+      alpha=0.10),shape=21) +
+      ### </b>
+  scale_size(range = c(0, 5))
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat6b, echo=FALSE, warning=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      size=Raw.Score,
+      ### <b>
+      alpha=0.10),shape=21) +
+      ### </b>
+  scale_size(range = c(0, 5))
+
+nyc_sat
+```
+
+
+## SAT Scores in NYC High Schools
+```{r sat7a, echo=TRUE, warning=FALSE, eval=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      size=Raw.Score, alpha=0.10),shape=21) +
+  scale_size(range = c(0, 5)) +
+  ### <b>
+  scale_alpha(guide = 'none') +
+  labs(title = "SAT Scores in New York City High Schools",
+       x = "Longitude", y = "Latitude", size = "SAT Score")
+  ### </b>
+
+nyc_sat
+```
+
+## SAT Scores in NYC High Schools
+```{r sat7b, echo=FALSE, warning=FALSE}
+nyc_sat <- ggmap(nyc) +
+  geom_point(data = sat, aes(x = Longitude, y = Latitude,
+      size=Raw.Score, alpha=0.10),shape=21) +
+  scale_size(range = c(0, 5)) +
+  ### <b>
+  scale_alpha(guide = 'none') +
+  labs(title = "SAT Scores in New York City High Schools",
+       x = "Longitude", y = "Latitude", size = "SAT Score")
+  ### </b>
+
+nyc_sat
+```
+
+## leaflet
+```{r leaflet, echo=TRUE, eval=FALSE}
+leaflet(data = NULL, width = NULL, height = NULL, padding = 0,
+  options = leafletOptions())
+```
+- data: a data object. Some supported objects are matrices, data frames, and spatial objects from the sp package (SpatialPoints, Polygons)
+- width: width of the map
+- height: height of map
+- minZoom: minimum zoom level of the map
+- maxZoom: maximum zoom level of the map
+- scales or resolutions: factors (projection units per pixel, for example meters/pixel) for zoom levels
+
+## SAT Scores in NYC High Schools
+```{r sat8, echo=TRUE, include=TRUE, warning=FALSE}
+map <- leaflet(sat) %>%
+  addTiles(urlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+map
+```
+- If viewing the leaflet map in browser as "html", use the urlTemplate argument
+- If viewing the leaflet map in R "html" preview viewer, remove the urlTemplate argument from addTiles()
+
+
+
+## SAT Scores in NYC High Schools
+```{r sat9, echo=TRUE, include=TRUE, warning=FALSE}
+map <- leaflet(sat) %>%
+  addTiles(urlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+### <b>
+map %>% addCircleMarkers(lat = ~Latitude, lng = ~Longitude,
+        fill = FALSE, radius = ~(1/150 * Raw.Score), color="black")
+### </b>
+```
+
+## SAT Scores in NYC High Schools
+```{r sat10, echo=TRUE, include=TRUE, warning=FALSE}
+map <- leaflet(sat) %>%
+  addTiles(urlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+map %>% addCircleMarkers(lat = ~Latitude, lng = ~Longitude,
+        fill = FALSE, radius = ~(1/150 * Raw.Score), color="black",
+        ### <b>
+        clusterOptions = markerClusterOptions())
+        ### </b>
+```
+
+## Some Helpful Resources
+- ggplot Cheat Sheet:
+    + https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+- ggmap Cheat Sheet:
+    + https://www.nceas.ucsb.edu/~frazier/RSpatialGuides/ggmap/ggmapCheatsheet.pdf
+- leaflet Cheat Sheet and Helpful Tutorial:
+    + https://paulvanderlaken.files.wordpress.com/2017/08/leaflet-cheat-sheet.pdf
+    + https://rstudio.github.io/leaflet/
+- Cool Examples:
+    + http://spatial.ly/r/
+
