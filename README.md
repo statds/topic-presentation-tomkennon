@@ -1,42 +1,23 @@
-Data Science Lab Project Templates
+Introduction to Geospatial Visualization
 ==============================
 
-The repository provides R Markdown templates for data science lab projects.
+This repository is a topic presentation/tutorial slides for geospatial visualizations.
 
 
-## Getting Started
+This {.html} presentation is generated from an R markdown {.Rmd} file.  The datasets are included in the repository to allow for reproducible code.
 
-We may download and unpack the [ZIP][zip] file of the repository, then compile
-the source document within [RStudio][rstudio] (by clicking the button *knit* or
-hitting the shortcut *Ctrl+Shift+K*).
 
-Alternatively (and probably more efficiently), we may clone the repository and
-let the Makefile help reproduce the output as follows:
+This presentation uses to two main toy datasets including:
+**U.S. State Populations** *"state populations.csv"* (https://census.gov).
+as well as:
+**New York City High School SAT Scores** *"scores.csv"* (https://www.kaggle.com/nycopendata/high-schools).
 
-```bash
-git clone https://github.com/statds/dslab-templates.git
-cd dslab-templates
-make       # for output in pdf and html
-```
-
-The available targets in the Makefile include
-
-- `all`, default target for output in PDF and HTML.
-- `pdf` for PDF output only
-- `html`  for HTML output only
-- `clean` for cleaning some temporary files such as `*.log` and `*.aux`.
-- `rmCache` for cleaning cache files, which can be crucial if we modified
-    code chunk for a new evaluation.
 
 
 ## Output Preview
 
-The output of the templates in PDF and HTML are available for preview.
+The output of the templates in PDF and HTML are available for download here:
+- [Datasets](https://github.com/statds/topic-presentation-tomkennon/tree/master/Datasets)
+- [RMD](https://github.com/statds/topic-presentation-tomkennon/blob/master/Introduction%20to%20Geospatial%20Visualizations.Rmd)
+- [HTML](https://github.com/statds/topic-presentation-tomkennon/blob/master/Introduction_to_Geospatial_Visualizations.html)
 
-- [PDF](https://statds.github.io/dslab-templates/template.pdf)
-- [HTML](https://statds.github.io/dslab-templates/)
-
-
-
-[zip]: https://github.com/statds/dslab-templates/archive/master.zip
-[rstudio]: https://www.rstudio.com/
