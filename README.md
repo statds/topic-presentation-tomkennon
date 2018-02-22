@@ -5,10 +5,10 @@ This repository is a topic presentation/tutorial slides for geospatial visualiza
 
 
 ## Datasets
-This presentation uses to two main toy datasets including:
-**U.S. State Populations** [state populations.csv](https://github.com/statds/topic-presentation-tomkennon/blob/master/Datasets/state%20populations.csv) (source: https://census.gov).
-as well as:
-**New York City High School SAT Scores** [scores.csv](https://github.com/statds/topic-presentation-tomkennon/blob/master/Datasets/scores.csv) (source: https://www.kaggle.com/nycopendata/high-schools).
+This presentation uses to two main toy datasets including: <br />
+**U.S. State Populations** [state populations.csv](https://github.com/statds/topic-presentation-tomkennon/blob/master/Datasets/state%20populations.csv) (source: https://census.gov). <br />
+as well as: <br />
+**New York City High School SAT Scores** [scores.csv](https://github.com/statds/topic-presentation-tomkennon/blob/master/Datasets/scores.csv) (source: https://www.kaggle.com/nycopendata/high-schools). <br />
 
 ## Slides
 The slides layout simple syntax in the {ggplot2}, {ggmap}, and {leaflet} packages.  A geographical heat map of the continental Unites States is fit to the U.S. State Populations data.  A static geographical map of New York City is fit with the New York City SAT Scores data.  An interactive geographical map of New York City is then fit with the same New York City SAT Scores data.  Some helpful resources are then included in the end slide for futher exploration.
